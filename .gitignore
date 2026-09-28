@@ -1,0 +1,26 @@
+*Zone.Identifier
+
+# Uploaded media is runtime content, not source
+media/*
+!media/.gitkeep
+!media/.htaccess
+!media/config.json
+
+# Admin-only data (users, audit log) is runtime content, not source
+data/*
+!data/.gitkeep
+!data/.htaccess
+
+# Device tokens (Android TV app) - runtime content, not source
+devices/*
+!devices/.gitkeep
+
+# Device heartbeat state (last-seen timestamps) - runtime telemetry, not source
+heartbeats/*
+!heartbeats/.gitkeep
+
+node_modules/
+
+# Downloaded design-skill reference data (uipro), not part of the app -
+# reinstall with `uipro init --ai claude` if needed, no need to version it.
+.claude/

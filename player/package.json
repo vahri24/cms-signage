@@ -1,0 +1,13 @@
+{
+  "name": "signage-player",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Digital signage public player: HTTP slideshow (unchanged behavior) + authenticated /v1/content API for the future Android TV app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

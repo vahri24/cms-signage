@@ -1,0 +1,8 @@
+*:Zone.Identifier
+README.md
+Dockerfile
+.dockerignore
+.git
+node_modules
+admin-php-legacy
+player-static-legacy

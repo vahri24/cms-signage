@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signage Admin - Audit Trail</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <%- include('partials/sidebar', { page: 'audit', username, role, isSuperadmin }) %>
+  <div class="content-area">
+  <%- include('partials/content-topbar', { username, role }) %>
+  <main class="main">
+    <h2>Audit Trail</h2>
+    <p class="hint-text">Riwayat 500 aktivitas terakhir: login, upload, hapus konten, dan perubahan TV/user. Terbaru di atas.</p>
+
+    <table class="data-table">
+      <thead>
+        <tr><th>Waktu</th><th>User</th><th>Aksi</th><th>Detail</th></tr>
+      </thead>
+      <tbody>
+        <% if (!entries.length) { %>
+          <tr><td colspan="4" class="empty-state">
+            <svg class="icon icon-lg"><use href="#icon-clipboard"/></svg>
+            Belum ada aktivitas tercatat.
+          </td></tr>
+        <% } %>
+        <% entries.forEach((e, i) => { %>
+          <tr style="--i: <%= i %>">
+            <td class="mono"><%= e.ts || '-' %></td>
+            <td><%= e.user || '-' %></td>
+            <td class="mono"><%= e.action || '-' %></td>
+            <td class="slide-filename" style="white-space:normal;"><%= detailText(e) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signage Admin - Devices</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <%- include('partials/sidebar', { page: 'devices', username, role, isSuperadmin }) %>
+  <div class="content-area">
+  <%- include('partials/content-topbar', { username, role }) %>
+  <main class="main">
+    <h2>Devices</h2>
+    <p class="hint-text">Token untuk aplikasi Android TV (dipakai lewat header <code>Authorization: Bearer &lt;token&gt;</code> ke <code>/v1/content</code>). Setiap device terikat ke satu <a href="/areas">Area</a> - semua device di area yang sama otomatis menampilkan playlist area itu. Setiap perubahan tercatat di <a href="/audit">Audit Trail</a>.</p>
+
+    <% if (error) { %><div class="alert alert-error"><svg class="icon"><use href="#icon-alert-circle"/></svg><span><%= error %></span></div><% } %>
+    <% if (success) { %><div class="alert alert-ok"><svg class="icon"><use href="#icon-check-circle"/></svg><span><%= success %></span></div><% } %>
+
+    <% if (newToken) { %>
+      <div class="alert alert-ok">
+        <svg class="icon"><use href="#icon-check-circle"/></svg>
+        <span>
+          <strong>Token device (tampil sekali saja, salin sekarang):</strong><br>
+          <code id="newTokenValue" style="word-break:break-all;"><%= newToken %></code>
+          <button type="button" class="btn btn-ghost btn-copy" id="copyTokenBtn"><svg class="icon"><use href="#icon-copy"/></svg> Salin Token</button>
+        </span>
+      </div>
+      <script>
+        document.getElementById('copyTokenBtn').addEventListener('click', () => {
+          navigator.clipboard.writeText(document.getElementById('newTokenValue').textContent).then(() => {
+            const btn = document.getElementById('copyTokenBtn');
+            btn.innerHTML = '<svg class="icon"><use href="#icon-check-circle"/></svg> Tersalin!';
+            setTimeout(() => (btn.innerHTML = '<svg class="icon"><use href="#icon-copy"/></svg> Salin Token'), 1500);
+          });
+        });
+      </script>
+    <% } %>
+
+    <section class="panel-box">
+      <h3>Tambah Device Baru</h3>
+      <form method="POST" action="/devices" class="inline-form">
+        <input type="hidden" name="form_action" value="create">
+        <label>Nama Device <input type="text" name="name" required placeholder="Android TV Lobby"></label>
+        <label>Area
+          <select name="area">
+            <% Object.keys(areas).forEach((key) => { %>
+              <option value="<%= key %>"><%= areas[key].name || key %></option>
+            <% }) %>
+          </select>
+        </label>
+        <button type="submit" class="btn btn-primary"><svg class="icon"><use href="#icon-plus"/></svg> Buat Device &amp; Token</button>
+      </form>
+    </section>
+
+    <table class="data-table">
+      <thead>
+        <tr><th>Nama</th><th>Area</th><th>Status</th><th>Heartbeat</th><th>Dibuat</th><th>Aksi</th></tr>
+      </thead>
+      <tbody>
+        <% if (!devices.length) { %>
+          <tr><td colspan="6" class="empty-state">
+            <svg class="icon icon-lg"><use href="#icon-device"/></svg>
+            Belum ada device terdaftar.
+          </td></tr>
+        <% } %>
+        <% devices.forEach((d, i) => { %>
+          <tr style="--i: <%= i %>">
+            <td><%= d.name %></td>
+            <td><%= (areas[d.area] && areas[d.area].name) || d.area %></td>
+            <td><% if (d.disabled) { %><span class="status-err">Nonaktif</span><% } else { %><span class="status-ok">Aktif</span><% } %></td>
+            <td class="device-status" data-device-id="<%= d.id %>">
+              <span class="<%= deviceStatus[d.id].state === 'online' ? 'status-ok' : 'status-muted' %>"><%= deviceStatus[d.id].label %></span>
+            </td>
+            <td class="mono"><%= d.created_at || '-' %></td>
+            <td class="table-actions">
+              <form method="POST" action="/devices" class="inline-form-tight">
+                <input type="hidden" name="form_action" value="toggle">
+                <input type="hidden" name="id" value="<%= d.id %>">
+                <button type="submit" class="btn btn-ghost btn-copy"><%= d.disabled ? 'Aktifkan' : 'Nonaktifkan' %></button>
+              </form>
+              <form method="POST" action="/devices" class="inline-form-tight" onsubmit="return confirm('Hapus device ini secara permanen?');">
+                <input type="hidden" name="form_action" value="delete">
+                <input type="hidden" name="id" value="<%= d.id %>">
+                <button type="submit" class="btn btn-danger-outline"><svg class="icon"><use href="#icon-trash"/></svg> Hapus</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </main>
+  </div>
+<script>
+  async function refreshDeviceStatus() {
+    try {
+      const res = await fetch('/devices/status');
+      const data = await res.json();
+      if (!data.ok) return;
+      document.querySelectorAll('.device-status').forEach((cell) => {
+        const status = data.devices[cell.dataset.deviceId];
+        if (!status) return;
+        const span = cell.querySelector('span');
+        span.className = status.state === 'online' ? 'status-ok' : 'status-muted';
+        span.textContent = status.label;
+      });
+    } catch (e) {
+      // Transient network hiccup - next interval will retry, no need to surface it.
+    }
+  }
+  setInterval(refreshDeviceStatus, 20000);
+</script>
+</body>
+</html>

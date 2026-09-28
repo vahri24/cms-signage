@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Signage Admin</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body class="login-body">
+  <%- include('partials/icons') %>
+  <form class="login-card" method="POST" action="/login" autocomplete="off">
+    <div class="login-icon"><svg class="icon icon-xl"><use href="#icon-lock"/></svg></div>
+    <h1>Signage Admin</h1>
+    <p class="login-sub">Masuk untuk kelola konten TV</p>
+    <% if (error) { %>
+      <div class="alert alert-error"><svg class="icon"><use href="#icon-alert-circle"/></svg><span><%= error %></span></div>
+    <% } %>
+    <label>
+      Username
+      <input type="text" name="username" required autofocus autocapitalize="off" autocomplete="username">
+    </label>
+    <label>
+      Password
+      <input type="password" name="password" required autocomplete="current-password">
+    </label>
+    <button type="submit" class="btn btn-primary btn-block">Masuk</button>
+  </form>
+</body>
+</html>

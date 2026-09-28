@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Signage</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: #000;
+    overflow: hidden;
+    font-family: -apple-system, Arial, sans-serif;
+  }
+  #stage {
+    position: relative;
+    width: 100vw; height: 100vh;
+  }
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+    background: #000;
+  }
+  .slide.active { opacity: 1; z-index: 2; }
+  .slide img, .slide video {
+    width: 100%; height: 100%;
+    object-fit: contain;
+  }
+  #empty-state {
+    color: #666;
+    font-size: 24px;
+    text-align: center;
+  }
+  #clock {
+    position: fixed;
+    bottom: 16px; right: 20px;
+    color: rgba(255,255,255,0.35);
+    font-size: 14px;
+    z-index: 10;
+    font-variant-numeric: tabular-nums;
+  }
+  #logo {
+    position: fixed;
+    top: 16px; right: 20px;
+    height: 32px;
+    z-index: 10;
+    opacity: 0.85;
+  }
+</style>
+</head>
+<body>
+  <div id="stage">
+    <div id="empty-state" class="slide active">Belum ada konten. Tambahkan lewat panel admin.</div>
+  </div>
+  <img id="logo" src="assets/logo.png" alt="Logo">
+  <div id="clock"></div>
+
+<script>
+const CONFIG_URL = 'media/config.json';
+const CONFIG_REFRESH_MS = 60000; // cek config baru tiap 60 detik
+const DEFAULT_DURATION = 8; // detik, untuk gambar
+
+const params = new URLSearchParams(window.location.search);
+const DISPLAY_ID = params.get('tv') || 'tv1';
+
+let slides = [];
+let currentIndex = -1;
+let currentEl = null;
+let advanceTimer = null;
+let configVersion = null;
+
+function fmtClock() {
+  const d = new Date();
+  const p = n => String(n).padStart(2, '0');
+  document.getElementById('clock').textContent = `${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+setInterval(fmtClock, 1000);
+fmtClock();
+
+async function loadConfig() {
+  try {
+    const res = await fetch(CONFIG_URL + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) return;
+    const data = await res.json();
+    const display = (data.displays || {})[DISPLAY_ID];
+    const displaySlides = display ? (display.slides || []) : [];
+    const newVersion = JSON.stringify(displaySlides);
+    if (newVersion !== configVersion) {
+      configVersion = newVersion;
+      slides = displaySlides.filter(s => s.file);
+      if (currentIndex === -1 || currentIndex >= slides.length) {
+        currentIndex = -1;
+        showNext();
+      }
+    }
+  } catch (e) {
+    console.error('Gagal load config.json', e);
+  }
+}
+
+function buildSlideEl(slide) {
+  const wrap = document.createElement('div');
+  wrap.className = 'slide';
+  const src = 'media/' + slide.file;
+
+  if (slide.type === 'video') {
+    const video = document.createElement('video');
+    video.src = src;
+    video.autoplay = true;
+    video.muted = true;
+    video.playsInline = true;
+    wrap.appendChild(video);
+  } else {
+    const img = document.createElement('img');
+    img.src = src;
+    wrap.appendChild(img);
+  }
+  return wrap;
+}
+
+function showNext() {
+  if (!slides.length) {
+    document.getElementById('stage').innerHTML =
+      `<div id="empty-state" class="slide active">Belum ada konten untuk ${DISPLAY_ID.toUpperCase()}.<br>Tambahkan lewat panel admin.</div>`;
+    clearTimeout(advanceTimer);
+    return;
+  }
+
+  currentIndex = (currentIndex + 1) % slides.length;
+  const slide = slides[currentIndex];
+  const stage = document.getElementById('stage');
+
+  const newEl = buildSlideEl(slide);
+  stage.appendChild(newEl);
+  // force reflow then fade in
+  requestAnimationFrame(() => newEl.classList.add('active'));
+
+  const oldEl = currentEl;
+  if (oldEl) {
+    setTimeout(() => oldEl.remove(), 900);
+  }
+  currentEl = newEl;
+
+  clearTimeout(advanceTimer);
+
+  if (slide.type === 'video') {
+    const videoEl = newEl.querySelector('video');
+    const maxDuration = (slide.duration || 0) * 1000;
+    videoEl.onended = showNext;
+    if (maxDuration > 0) {
+      advanceTimer = setTimeout(showNext, maxDuration);
+    }
+  } else {
+    const duration = (slide.duration || DEFAULT_DURATION) * 1000;
+    advanceTimer = setTimeout(showNext, duration);
+  }
+}
+
+loadConfig();
+setInterval(loadConfig, CONFIG_REFRESH_MS);
+</script>
+</body>
+</html>

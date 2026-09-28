@@ -1,0 +1,35 @@
+<%- include('icons') %>
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('sidebarCollapsed') === '1') {
+        document.documentElement.classList.add('sidebar-collapsed');
+      }
+    } catch (e) {}
+  })();
+</script>
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <img class="sidebar-logo" src="/assets/logo.png" alt="Logo">
+    <span class="sidebar-app-name">Admin</span>
+  </div>
+  <nav class="sidebar-nav" aria-label="Navigasi utama">
+    <a href="/" class="sidebar-link <%= page === 'index' ? 'active' : '' %>" <%- page === 'index' ? 'aria-current="page"' : '' %>>
+      <svg class="icon"><use href="#icon-tv"/></svg><span>Kelola Konten</span>
+    </a>
+    <a href="/areas" class="sidebar-link <%= page === 'areas' ? 'active' : '' %>" <%- page === 'areas' ? 'aria-current="page"' : '' %>>
+      <svg class="icon"><use href="#icon-grid"/></svg><span>Areas</span>
+    </a>
+    <a href="/devices" class="sidebar-link <%= page === 'devices' ? 'active' : '' %>" <%- page === 'devices' ? 'aria-current="page"' : '' %>>
+      <svg class="icon"><use href="#icon-device"/></svg><span>Devices</span>
+    </a>
+    <a href="/audit" class="sidebar-link <%= page === 'audit' ? 'active' : '' %>" <%- page === 'audit' ? 'aria-current="page"' : '' %>>
+      <svg class="icon"><use href="#icon-clipboard"/></svg><span>Audit Trail</span>
+    </a>
+    <% if (isSuperadmin) { %>
+      <a href="/users" class="sidebar-link <%= page === 'users' ? 'active' : '' %>" <%- page === 'users' ? 'aria-current="page"' : '' %>>
+        <svg class="icon"><use href="#icon-users"/></svg><span>Users</span>
+      </a>
+    <% } %>
+  </nav>
+</aside>

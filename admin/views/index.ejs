@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signage Admin - Kelola Konten</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <%- include('partials/sidebar', { page: 'index', username, role, isSuperadmin }) %>
+  <div class="content-area">
+  <%- include('partials/content-topbar', { username, role }) %>
+  <main class="main">
+    <div class="tv-tabs" id="tvTabs">
+      <% Object.keys(displays).forEach((key) => { %>
+        <button class="tv-tab" data-display="<%= key %>">
+          <%= displays[key].name || key %>
+        </button>
+      <% }) %>
+      <button class="tv-tab tv-tab-add" id="addTvBtn" title="Tambah TV baru">
+        <svg class="icon"><use href="#icon-plus"/></svg> Tambah TV
+      </button>
+    </div>
+
+    <div class="tv-link-row">
+      <span>Link untuk Fully Kiosk di TV ini:</span>
+      <code id="tvLinkDisplay">-</code>
+      <button class="btn btn-ghost btn-copy" id="copyLinkBtn"><svg class="icon"><use href="#icon-copy"/></svg> Salin Link</button>
+      <a href="#" id="previewLink" target="_blank" class="btn btn-ghost"><svg class="icon"><use href="#icon-external"/></svg> Lihat Tampilan</a>
+      <button class="btn btn-ghost btn-copy" id="renameTvBtn"><svg class="icon"><use href="#icon-pencil"/></svg> Ubah Nama TV</button>
+      <button class="btn btn-danger-outline" id="deleteTvBtn"><svg class="icon"><use href="#icon-trash"/></svg> Hapus TV Ini</button>
+    </div>
+
+    <section class="upload-rules">
+      <h3><svg class="icon"><use href="#icon-info"/></svg> Panduan Upload Konten</h3>
+      <ul>
+        <li>Format gambar: JPG, PNG, GIF, WEBP &middot; Format video: MP4, WEBM</li>
+        <li>Ukuran maksimal file: <strong>50MB</strong> per upload</li>
+        <li>Resolusi disarankan: <strong>1920 x 1080 px</strong> (Full HD), orientasi <strong>landscape/mendatar</strong></li>
+        <li>Hindari gambar/video portrait — akan tampil terpotong di TV</li>
+        <li>Pastikan konten sudah final (harga, tanggal promo, dll) sebelum diupload</li>
+        <li>Video otomatis di-mute saat tampil di TV (kebijakan autoplay browser)</li>
+      </ul>
+    </section>
+
+    <section class="upload-zone" id="dropzone">
+      <input type="file" id="fileInput" accept="image/*,video/mp4,video/webm,video/quicktime" multiple hidden>
+      <div class="upload-inner">
+        <div class="upload-icon"><svg class="icon icon-lg"><use href="#icon-upload"/></svg></div>
+        <p><strong>Klik untuk pilih file</strong> atau seret gambar/video ke sini</p>
+        <p class="upload-hint">Format: JPG, PNG, GIF, WEBP, MP4, WEBM &middot; Maks 50MB</p>
+      </div>
+    </section>
+
+    <div id="uploadStatus"></div>
+
+    <div class="section-header">
+      <h2>Konten Aktif <span id="slideCount" class="count-badge"></span></h2>
+      <button id="saveOrderBtn" class="btn btn-primary" disabled><svg class="icon"><use href="#icon-save"/></svg> Simpan Urutan</button>
+    </div>
+    <p class="hint-text">Seret kartu untuk mengubah urutan tampil. Perubahan urutan/durasi baru berlaku setelah klik "Simpan Urutan".</p>
+
+    <div id="slideGrid" class="slide-grid"></div>
+    <div id="emptyState" class="empty-state" style="display:none;">
+      <svg class="icon icon-lg"><use href="#icon-image"/></svg>
+      Belum ada konten untuk TV ini. Upload gambar atau video di atas untuk mulai.
+    </div>
+  </main>
+  </div>
+
+<script>
+  window.__GROUP__ = 'displays';
+  window.__GROUP_LABEL__ = 'TV';
+  window.__GROUP_DATA__ = <%- JSON.stringify(displays) %>;
+  // Admin (internal-only) dan player (public) dua service/host terpisah,
+  // jadi base URL player datang dari config server-side, bukan diturunkan
+  // dari lokasi admin panel sendiri.
+  window.__SIGNAGE_BASE_URL__ = <%- JSON.stringify(playerBaseUrl) %>;
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<script src="/script.js"></script>
+</body>
+</html>

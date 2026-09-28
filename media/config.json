@@ -1,0 +1,52 @@
+{
+  "displays": {
+    "tv1": {
+      "name": "TV 1",
+      "slides": [
+        {
+          "file": "alacarte-4a2587.jpg",
+          "type": "image",
+          "duration": 8
+        },
+        {
+          "file": "Sei-Komplit-16bbef.jpg",
+          "type": "image",
+          "duration": 8
+        }
+      ]
+    },
+    "tv2": {
+      "name": "TV 2",
+      "slides": []
+    },
+    "tv3": {
+      "name": "TV 3",
+      "slides": []
+    },
+    "tv4": {
+      "name": "TV 4",
+      "slides": []
+    },
+    "tv5": {
+      "name": "TV 5",
+      "slides": []
+    }
+  },
+  "areas": {
+    "area1": {
+      "name": "Jakarta",
+      "slides": [
+        {
+          "file": "Apple-iPhone-18-Pro-and-iPhone-18-Pro-Max-Launch-Promotion-938e83.jpg",
+          "type": "image",
+          "duration": 8
+        },
+        {
+          "file": "iPhone-18-Pro_-The-ultimate-performance-and-camera-of-any-iPhone--with-exceptional-battery-life--a1bb16.mp4",
+          "type": "video",
+          "duration": 0
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,38 @@
+services:
+  player:
+    build:
+      context: .
+      dockerfile: docker/player.Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      # Local equivalent of the read-only EFS access point used in Fargate.
+      - ./media:/var/www/html/media:ro
+      # Device tokens for the /v1/content API (Android TV app) - player only
+      # ever verifies tokens here, never writes.
+      - ./devices:/var/www/html/devices:ro
+      # Heartbeat state (last-seen per device) - unlike devices/ above, this
+      # IS read-write here: it's disposable telemetry player itself produces
+      # on every authenticated /v1/content request, not identity data.
+      - ./heartbeats:/var/www/html/heartbeats
+
+  admin:
+    build:
+      context: .
+      dockerfile: docker/admin.Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    volumes:
+      # Local equivalent of the read-write EFS access point used in Fargate.
+      - ./media:/var/www/html/media
+      # Local equivalent of the admin-only EFS access point (users.json +
+      # audit log) - never mounted into the player service/container.
+      - ./data:/var/www/html/data
+      # Device tokens (Android TV app) - admin creates/revokes them; see
+      # admin/src/routes/devices.js.
+      - ./devices:/var/www/html/devices
+      # Heartbeat state - admin only reads this to show online/offline in the
+      # Devices page; player is the one actually writing it.
+      - ./heartbeats:/var/www/html/heartbeats

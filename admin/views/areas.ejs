@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signage Admin - Areas</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <%- include('partials/sidebar', { page: 'areas', username, role, isSuperadmin }) %>
+  <div class="content-area">
+  <%- include('partials/content-topbar', { username, role }) %>
+  <main class="main">
+    <p class="hint-text">Area punya playlist promo sendiri, terpisah dari TV. Semua device (aplikasi Android TV) yang di-assign ke area yang sama otomatis menampilkan playlist ini - lihat halaman <a href="/devices">Devices</a>.</p>
+
+    <div class="tv-tabs" id="tvTabs">
+      <% Object.keys(areas).forEach((key) => { %>
+        <button class="tv-tab" data-display="<%= key %>">
+          <%= areas[key].name || key %>
+        </button>
+      <% }) %>
+      <button class="tv-tab tv-tab-add" id="addTvBtn" title="Tambah Area baru">
+        <svg class="icon"><use href="#icon-plus"/></svg> Tambah Area
+      </button>
+    </div>
+
+    <div class="tv-link-row">
+      <button class="btn btn-ghost btn-copy" id="renameTvBtn"><svg class="icon"><use href="#icon-pencil"/></svg> Ubah Nama Area</button>
+      <button class="btn btn-danger-outline" id="deleteTvBtn"><svg class="icon"><use href="#icon-trash"/></svg> Hapus Area Ini</button>
+    </div>
+
+    <section class="upload-rules">
+      <h3><svg class="icon"><use href="#icon-info"/></svg> Panduan Upload Konten</h3>
+      <ul>
+        <li>Format gambar: JPG, PNG, GIF, WEBP &middot; Format video: MP4, WEBM</li>
+        <li>Ukuran maksimal file: <strong>50MB</strong> per upload</li>
+        <li>Resolusi disarankan: <strong>1920 x 1080 px</strong> (Full HD), orientasi <strong>landscape/mendatar</strong></li>
+        <li>Hindari gambar/video portrait — akan tampil terpotong di layar</li>
+        <li>Pastikan konten sudah final (harga, tanggal promo, dll) sebelum diupload</li>
+        <li>Video otomatis di-mute saat tampil (kebijakan autoplay browser)</li>
+      </ul>
+    </section>
+
+    <section class="upload-zone" id="dropzone">
+      <input type="file" id="fileInput" accept="image/*,video/mp4,video/webm,video/quicktime" multiple hidden>
+      <div class="upload-inner">
+        <div class="upload-icon"><svg class="icon icon-lg"><use href="#icon-upload"/></svg></div>
+        <p><strong>Klik untuk pilih file</strong> atau seret gambar/video ke sini</p>
+        <p class="upload-hint">Format: JPG, PNG, GIF, WEBP, MP4, WEBM &middot; Maks 50MB</p>
+      </div>
+    </section>
+
+    <div id="uploadStatus"></div>
+
+    <div class="section-header">
+      <h2>Konten Aktif <span id="slideCount" class="count-badge"></span></h2>
+      <button id="saveOrderBtn" class="btn btn-primary" disabled><svg class="icon"><use href="#icon-save"/></svg> Simpan Urutan</button>
+    </div>
+    <p class="hint-text">Seret kartu untuk mengubah urutan tampil. Perubahan urutan/durasi baru berlaku setelah klik "Simpan Urutan".</p>
+
+    <div id="slideGrid" class="slide-grid"></div>
+    <div id="emptyState" class="empty-state" style="display:none;">
+      <svg class="icon icon-lg"><use href="#icon-image"/></svg>
+      Belum ada konten untuk area ini. Upload gambar atau video di atas untuk mulai.
+    </div>
+  </main>
+  </div>
+
+<script>
+  window.__GROUP__ = 'areas';
+  window.__GROUP_LABEL__ = 'Area';
+  window.__GROUP_DATA__ = <%- JSON.stringify(areas) %>;
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<script src="/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signage Admin - Kelola User</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <%- include('partials/sidebar', { page: 'users', username, role, isSuperadmin: true }) %>
+  <div class="content-area">
+  <%- include('partials/content-topbar', { username, role }) %>
+  <main class="main">
+    <h2>Kelola User</h2>
+    <p class="hint-text">Superadmin bisa membuat akun, mengubah role, menonaktifkan, atau menghapus akun lain. Setiap perubahan tercatat di <a href="/audit">Audit Trail</a>.</p>
+
+    <% if (error) { %><div class="alert alert-error"><svg class="icon"><use href="#icon-alert-circle"/></svg><span><%= error %></span></div><% } %>
+    <% if (success) { %><div class="alert alert-ok"><svg class="icon"><use href="#icon-check-circle"/></svg><span><%= success %></span></div><% } %>
+
+    <section class="panel-box">
+      <h3>Tambah User Baru</h3>
+      <form method="POST" action="/users" class="inline-form">
+        <input type="hidden" name="form_action" value="create">
+        <label>Username <input type="text" name="username" required autocapitalize="off"></label>
+        <label>Password <input type="password" name="password" required minlength="6"></label>
+        <label>Role
+          <select name="role">
+            <option value="editor">Editor (kelola konten saja)</option>
+            <option value="superadmin">Superadmin (kelola user juga)</option>
+          </select>
+        </label>
+        <button type="submit" class="btn btn-primary"><svg class="icon"><use href="#icon-plus"/></svg> Tambah</button>
+      </form>
+    </section>
+
+    <table class="data-table">
+      <thead>
+        <tr><th>Username</th><th>Role</th><th>Status</th><th>Dibuat</th><th>Aksi</th></tr>
+      </thead>
+      <tbody>
+        <% users.forEach((u, i) => { %>
+          <tr style="--i: <%= i %>">
+            <td class="mono"><%= u.username %></td>
+            <td><%= u.role %></td>
+            <td><% if (u.disabled) { %><span class="status-err">Nonaktif</span><% } else { %><span class="status-ok">Aktif</span><% } %></td>
+            <td class="mono"><%= u.created_at || '-' %></td>
+            <td class="table-actions">
+              <% if (u.username !== username) { %>
+                <form method="POST" action="/users" class="inline-form-tight">
+                  <input type="hidden" name="form_action" value="toggle">
+                  <input type="hidden" name="username" value="<%= u.username %>">
+                  <button type="submit" class="btn btn-ghost btn-copy"><%= u.disabled ? 'Aktifkan' : 'Nonaktifkan' %></button>
+                </form>
+                <form method="POST" action="/users" class="inline-form-tight" onsubmit="return confirm('Hapus user ini secara permanen?');">
+                  <input type="hidden" name="form_action" value="delete">
+                  <input type="hidden" name="username" value="<%= u.username %>">
+                  <button type="submit" class="btn btn-danger-outline"><svg class="icon"><use href="#icon-trash"/></svg> Hapus</button>
+                </form>
+              <% } else { %>
+                <span class="hint-text" style="margin:0;">(akun kamu)</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </main>
+  </div>
+</body>
+</html>

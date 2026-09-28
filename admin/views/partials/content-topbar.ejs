@@ -1,0 +1,19 @@
+<header class="content-topbar">
+  <button type="button" class="icon-btn" id="sidebarToggle" aria-label="Tampilkan/sembunyikan sidebar">
+    <svg class="icon"><use href="#icon-menu"/></svg>
+  </button>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-user">
+    <div class="user-name"><%= username %></div>
+    <div class="user-role"><%= role %></div>
+  </div>
+  <a href="/logout" class="btn-signout">
+    <svg class="icon"><use href="#icon-logout"/></svg> Sign out
+  </a>
+</header>
+<script>
+  document.getElementById('sidebarToggle').addEventListener('click', () => {
+    const collapsed = document.documentElement.classList.toggle('sidebar-collapsed');
+    try { localStorage.setItem('sidebarCollapsed', collapsed ? '1' : '0'); } catch (e) {}
+  });
+</script>
