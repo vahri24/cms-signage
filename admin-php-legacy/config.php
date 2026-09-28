@@ -37,7 +37,7 @@ define('AUDIT_LOG_FILE', DATA_DIR . 'audit.log.jsonl');
 // Admin sekarang jalan sebagai service terpisah (internal-only) dari player
 // (public), jadi base URL player TIDAK BISA lagi diturunkan dari lokasi admin
 // panel sendiri - harus di-set eksplisit ke hostname publik player.
-define('PLAYER_BASE_URL', 'https://signage.seindonesia.co.id/');
+define('PLAYER_BASE_URL', 'https://signage.localhost/');
 
 define('MAX_UPLOAD_MB', 50);
 define('ALLOWED_IMAGE_EXT', ['jpg', 'jpeg', 'png', 'gif', 'webp']);

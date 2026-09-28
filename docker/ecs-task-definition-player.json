@@ -9,7 +9,7 @@
   "containerDefinitions": [
     {
       "name": "signage-player",
-      "image": "REPLACE_ACCOUNT_ID.dkr.ecr.REPLACE_REGION.amazonaws.com/seindonesia/common:signage-player",
+      "image": "REPLACE_ACCOUNT_ID.dkr.ecr.REPLACE_REGION.amazonaws.com/localhost/common:signage-player",
       "essential": true,
       "portMappings": [
         { "containerPort": 80, "protocol": "tcp" }

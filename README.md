@@ -231,18 +231,18 @@ meniru setup ini untuk testing lokal (bind mount `./media` ke path yang sama,
 read-only untuk `player`, read-write untuk `admin`).
 
 ### 7a. Build & push image ke ECR
-Dua image ini masuk ke ECR repo `seindonesia/common` yang sudah ada (dipakai
+Dua image ini masuk ke ECR repo `localhost/common` yang sudah ada (dipakai
 bareng beberapa service "common-*" lain, dibedakan lewat tag):
 ```bash
-docker build -f docker/player.Dockerfile -t seindonesia/common:signage-player .
-docker build -f docker/admin.Dockerfile -t seindonesia/common:signage-admin .
+docker build -f docker/player.Dockerfile -t localhost/common:signage-player .
+docker build -f docker/admin.Dockerfile -t localhost/common:signage-admin .
 
 aws ecr get-login-password --region <REGION> | docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com
 
-docker tag seindonesia/common:signage-player <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/seindonesia/common:signage-player
-docker tag seindonesia/common:signage-admin <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/seindonesia/common:signage-admin
-docker push <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/seindonesia/common:signage-player
-docker push <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/seindonesia/common:signage-admin
+docker tag localhost/common:signage-player <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/localhost/common:signage-player
+docker tag localhost/common:signage-admin <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/localhost/common:signage-admin
+docker push <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/localhost/common:signage-player
+docker push <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/localhost/common:signage-admin
 ```
 
 ### 7b. EFS

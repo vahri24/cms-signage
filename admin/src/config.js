@@ -51,7 +51,7 @@ module.exports = {
   // Admin jalan sebagai service terpisah (internal-only) dari player
   // (public), jadi base URL player TIDAK BISA diturunkan dari lokasi admin
   // panel sendiri - harus di-set eksplisit ke hostname publik player.
-  PLAYER_BASE_URL: 'https://signage.seindonesia.co.id/',
+  PLAYER_BASE_URL: 'https://signage.localhost/',
 
   // Dipakai untuk menandatangani session cookie. Ganti ke string acak
   // panjang di production (lihat README).
